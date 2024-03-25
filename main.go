@@ -139,18 +139,30 @@ func confirmUserInput(selectedRepositories []string, baseBranch, compareBranch, 
 }
 
 func validateInput(selectedRepositories []string, baseBranch, compareBranch, prTitle string) error {
+	var validationErrors []string
+
 	if len(selectedRepositories) == 0 {
-		return fmt.Errorf("no repositories selected")
+		validationErrors = append(validationErrors, "no repositories selected")
 	}
 	if baseBranch == "" {
-		return fmt.Errorf("base branch not selected")
+		validationErrors = append(validationErrors, "base branch not selected")
 	}
 	if compareBranch == "" {
-		return fmt.Errorf("compare branch not selected")
+		validationErrors = append(validationErrors, "compare branch not selected")
 	}
+	if baseBranch == compareBranch {
+		validationErrors = append(validationErrors, "base and compare branch are same")
+	}
+
+	// Warning
 	if prTitle == "" {
 		fmt.Println("Warning: PR title is empty")
 	}
+
+	if len(validationErrors) > 0 {
+		return fmt.Errorf("validation errors: %s", strings.Join(validationErrors, "; "))
+	}
+
 	return nil
 }
 
